@@ -1,47 +1,24 @@
-TODO:
-----------------------------------------------------------------------------------------------------
-Pseudocode for main.py:
+How Wordle Works:
+Solution word - folly
 
-welcome screen, ask to play or solve
+Guess 1 - flowy
+- The f and y would be green, because they are the right letters in the right place
+- The l and o would be yellow, because they are the right letters in the wrong place
+- The w would be gray, it is not in the solution word at all
 
-if solve:
--have the user input each of the letters in this format: A b c d e f g, where the first letter is capitalized and the center letter.
--run it through the dictionary solver algorithm
+Guess 2 - knoll
+- The o and first l would be green, because they are in the solution and in the right place
+- The second l would be yellow, because it is also in the solution word but in the wrong place
+- The k and n would be gray
 
-if play:
--check if regenerating letters, if yes, then regen.
--render the spelling bee screen in ascii art, with the same score system, ranks, words found, etc
--make the bottom line of the screen the input line, and input words the same way
--if the word works (run it through the inDictionary function) and it contains the proper letters, add it to letters.txt, calc score, show the word onscreen, etc
+New word - locks
 
-         /---\
-        /.....\
-       (.. m ..)
-  /---\ \...../ /---\
- /.....\ \---/ /.....\
-(.. m ..)/---\(.. m ..)
- \.....//.....\\...../
-  \---/(.. m ..)\---/
-  /---\ \...../ /---\
- /.....\ \---/ /.....\
-(.. m ..)/---\(.. m ..)
- \.....//.....\\...../
-  \---/(.. m ..)\---/
-        \...../
-         \---/
+Guess 1 - flowy
+- No letters are green.
+- The l and o are yellow, because they are in the wrong place
+- The f, w, and y are gray.
 
-         /---\\
-        /.....\\
-       (.. m ..)
-  /---\\ \\...../ /---\\
- /.....\\ \\---/ /.....\\
-(.. m ..)/---\\(.. m ..)
- \\.....//.....\\\\...../
-  \\---/(.. m ..)\\---/
-  /---\\ \\...../ /---\\
- /.....\\ \\---/ /.....\\
-(.. m ..)/---\\(.. m ..)
- \\.....//.....\\\\...../
-  \\---/(.. m ..)\\---/
-        \\...../
-         \\---/
+Guess 2 - knoll
+- No letters are green
+- The k, o, and first l are yellow, because they are in the wrong place
+- the n and second l are gray -- the n is not in the word, and there is only one l (the 'yellow' was taken by the first one)
