@@ -2,6 +2,7 @@
 #Author: Michael Drobot
 #https://github.com/mdrobot7
 
+from curses import nonl
 import time
 import sys
 
@@ -35,16 +36,42 @@ def removeWordsWithLetterNotInPos(let, pos): #removes words from dict that don't
             dict.pop(i)
             i -= 1
 
+def countUnknownLetters(word):
+    global nonLetters
+    global solution
+
+    numUnknownLetters = 0
+    for i in word:
+        pass
+
 def pickNextInput(): #selects the next input word
     #How the algorithm works:
     #If the solution array is missing more than 2 letters, it picks the word from dict with the most unknown letters
     #If the solution array is missing 1 or 2 letters, it starts guessing from the available words left
-    #If the solution array is full, it outputs the resulting word.
+    #If the solution array is full, or if there is only 1 choice left in dict, it outputs the resulting word.
 
     global dict
     global solution
     global nonLetters
-    pass
+    
+    numLettersMissing = 0
+    for i in solution:
+        if len(i) == 0: numLettersMissing += 1
+
+    if len(dict) == 1: return dict[0]
+    if numLettersMissing == 0:
+        result = ""
+        for i in solution: result += i #concatenate all letters of 'solution' into 'result'
+        return result
+    elif numLettersMissing <= 2:
+        pass
+    elif numLettersMissing > 2:
+        numUnknownLetters = 0
+        mostUnknownLetters = 0
+        mostUnknownLettersWord = ""
+
+        for i in dict:
+            pass
 
 def checkInput(_word, _result): #parses the inputted word, and its result. removes bad words from the dictionary list.
     global dict
