@@ -2,9 +2,8 @@
 #Author: Michael Drobot
 #https://github.com/mdrobot7
 
-from curses import nonl
-import time
 import sys
+import random
 
 allowProfane = False
 
@@ -36,18 +35,22 @@ def removeWordsWithLetterNotInPos(let, pos): #removes words from dict that don't
             dict.pop(i)
             i -= 1
 
-def countUnknownLetters(word):
+def countUnknownLetters(word): #counts the number of "unknown" letters (letters that are not in 'solution') in 'word'
     global nonLetters
     global solution
+    
+    tempSolution = solution
 
     numUnknownLetters = 0
     for i in word:
-        pass
+        if tempSolution.find(i) == -1: numUnknownLetters += 1
+        elif tempSolution.find(i) != -1: tempSolution.pop(tempSolution.find(i)) #remove letters that are found, fixes double letters
+    return numUnknownLetters
 
 def pickNextInput(): #selects the next input word
     #How the algorithm works:
-    #If the solution array is missing more than 2 letters, it picks the word from dict with the most unknown letters
-    #If the solution array is missing 1 or 2 letters, it starts guessing from the available words left
+    #If the solution array is missing more than 1 letter, it picks the word from dict with the most unknown letters
+    #If the solution array is missing 1 letter, it starts guessing from the available words left
     #If the solution array is full, or if there is only 1 choice left in dict, it outputs the resulting word.
 
     global dict
@@ -55,7 +58,7 @@ def pickNextInput(): #selects the next input word
     global nonLetters
     
     numLettersMissing = 0
-    for i in solution:
+    for i in solution: #count the number of letters missing from 'solution'
         if len(i) == 0: numLettersMissing += 1
 
     if len(dict) == 1: return dict[0]
@@ -63,15 +66,19 @@ def pickNextInput(): #selects the next input word
         result = ""
         for i in solution: result += i #concatenate all letters of 'solution' into 'result'
         return result
-    elif numLettersMissing <= 2:
-        pass
-    elif numLettersMissing > 2:
+    elif numLettersMissing == 1:
+        return random.choice(dict)
+    elif numLettersMissing > 1:
         numUnknownLetters = 0
         mostUnknownLetters = 0
         mostUnknownLettersWord = ""
 
         for i in dict:
-            pass
+            numUnknownLetters = countUnknownLetters(i)
+            if numUnknownLetters > mostUnknownLetters:
+                mostUnknownLetters = numUnknownLetters
+                mostUnknownLettersWord = i
+        return mostUnknownLettersWord
 
 def checkInput(_word, _result): #parses the inputted word, and its result. removes bad words from the dictionary list.
     global dict
@@ -159,13 +166,4 @@ for i in range(5): #5 more attempts to find the word
         if len(result) != 5: print("Result should be 5 characters.")
         result = input("Result: ")
 
-    checkInput(word, result)
-
-    if solution.count("") == 0:
-        print("Solution: ", end = "")
-        for i in solution:
-            print(i, end = "") #print out the final solution
-        break
-
-#for i in dict:
-#    print(i)
+    print("Next word: " + checkInput(word, result))
