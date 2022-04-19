@@ -43,8 +43,8 @@ def countUnknownLetters(word): #counts the number of "unknown" letters (letters 
 
     numUnknownLetters = 0
     for i in word:
-        if tempSolution.find(i) == -1: numUnknownLetters += 1
-        elif tempSolution.find(i) != -1: tempSolution.pop(tempSolution.find(i)) #remove letters that are found, fixes double letters
+        if tempSolution.count(i) == 0: numUnknownLetters += 1
+        elif tempSolution.count(i) != 0: tempSolution.remove(i) #remove letters that are found, fixes double letters
     return numUnknownLetters
 
 def pickNextInput(): #selects the next input word
@@ -108,7 +108,7 @@ def checkInput(_word, _result): #parses the inputted word, and its result. remov
                 removeWordsWithLetterNotInPos(ii, iii) #eliminate bad words
             foundEmptyIndexFlag = False
     
-    pickNextInput()
+    return pickNextInput()
 
 #====================================================================================================================================================================================#
 
@@ -146,24 +146,16 @@ while len(result) != 5:
     if len(result) != 5: print("Result should be 5 characters.")
     result = input("Result: ")
 
-checkInput(word, result)
-
-if solution.count("") == 0:
-    print("Solution: ", end = "")
-    for i in solution:
-        print(i, end = "") #print out the final solution
-
-
-
 for i in range(5): #5 more attempts to find the word
-    word = input("What is your input word? ")
-    while len(word) != 5:
-        if len(word) != 5: print("Input words should be 5 letters.")
-        word = input("What is your input word? ")
+    print("Next word: " + checkInput(word, result))
+
+    while True:
+        yesno = input("Was that the solution? [Y/N] ")
+        if yesno == "Y" or yesno == "y": raise SystemExit
+        elif yesno == "N" or yesno == "n": break
+        else: print("Not a valid input.")
 
     result = input("Result: ")
     while len(result) != 5:
         if len(result) != 5: print("Result should be 5 characters.")
         result = input("Result: ")
-
-    print("Next word: " + checkInput(word, result))
