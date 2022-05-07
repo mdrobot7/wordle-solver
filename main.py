@@ -23,17 +23,15 @@ except FileNotFoundError:
 
 def removeWordsWithLetter(let): #removes words from dict containing the letter 'let'
     global dict
-    for i in range(len(dict)):
-        if i.find(let) != -1: #if it finds the letter ANYWHERE in the dict word, remove the dict word
+    for i in range(len(dict) - 1, -1, -1):
+        if dict[i].find(let) != -1: #if it finds the letter ANYWHERE in the dict word, remove the dict word
             dict.pop(i)
-            i -= 1
             
 def removeWordsWithLetterNotInPos(let, pos): #removes words from dict that don't have the letter 'let' in position 'pos'
     global dict
-    for i in range(len(dict)):
+    for i in range(len(dict) - 1, -1, -1):
         if dict[i][pos] != let:
             dict.pop(i)
-            i -= 1
 
 def countUnknownLetters(word): #counts the number of "unknown" letters (letters that are not in 'solution') in 'word'
     global nonLetters
@@ -61,6 +59,8 @@ def pickNextInput(): #selects the next input word
     for i in solution: #count the number of letters missing from 'solution'
         if len(i) == 0: numLettersMissing += 1
 
+    print(numLettersMissing)
+
     if len(dict) == 1: return dict[0]
     if numLettersMissing == 0:
         result = ""
@@ -72,6 +72,7 @@ def pickNextInput(): #selects the next input word
         numUnknownLetters = 0
         mostUnknownLetters = 0
         mostUnknownLettersWord = ""
+        print("it ran")
 
         for i in dict:
             numUnknownLetters = countUnknownLetters(i)
@@ -86,17 +87,21 @@ def checkInput(_word, _result): #parses the inputted word, and its result. remov
     global nonLetters
 
     for i in range(5): #parse the input, eliminate dict words that CAN'T be the solution
-        if _result[i] == 0:
+        if _result[i] == "0":
             removeWordsWithLetter(_word[i])
-        elif _result[i] == 1:
+        elif _result[i] == "1":
             nonLetters[i] = _word[i]
-        elif _result[i] == 2:
+        elif _result[i] == "2":
             solution[i] = _word[i]
             removeWordsWithLetterNotInPos(_word[i], i)
             if _word[i] == 'q': #handle q-u combinations, just a bit of optimization
                 solution[i + 1] = 'u'
                 removeWordsWithLetterNotInPos('u', i + 1)
     
+    print(nonLetters)
+    print(solution)
+    print(dict)
+
     foundEmptyIndexFlag = False
     for i in range(5): #check nonLetters for 'process of elimination' cases - where there is only one place a letter can be.
         for ii in nonLetters[i]:
