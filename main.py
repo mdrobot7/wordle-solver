@@ -11,6 +11,8 @@ solution = ["", "", "", "", ""]
 
 nonLetters = ["", "", "", "", ""] #letters that are NOT in the appropriate slots (nonLetters[0] will contain letters NOT in slot 0)
 
+letterRank = "eariotnslcudpmhgbfywkvxzjq" #most common letters in english, in order
+
 try:
     dictFile = open("dictionary.txt", 'r')
     if allowProfane: #if profane is allowed
@@ -33,17 +35,34 @@ def removeWordsWithLetterNotInPos(let, pos): #removes words from dict that don't
         if dict[i][pos] != let:
             dict.pop(i)
 
-def countUnknownLetters(word): #counts the number of "unknown" letters (letters that are not in 'solution') in 'word'
+def removeWordsWithLetterInPos(let, pos):
+    global dict
+    for i in range(len(dict) - 1, -1, -1):
+        if dict[i][pos] == let:
+            dict.pop(i)
+
+def searchNonLetters(let): #searches nonLetters for a letter, returns true/false if it found/didn't find it
+    global nonLetters
+    for i in nonLetters:
+        if i.find(let) != -1: return True
+    return False
+
+def wordRankScore(word): #computes the "score" of a word, aka how good of a guess it is.
+    #closer to 0 is better.
+    #letters that repeat within 'word' are automatically 26. letters that are already in solution or nonletters are also 26
+    #should prioritize words with less found letters, and with more common letters
+    
     global nonLetters
     global solution
-    
-    tempSolution = solution
+    global letterRank
 
-    numUnknownLetters = 0
-    for i in word:
-        if tempSolution.count(i) == 0: numUnknownLetters += 1
-        elif tempSolution.count(i) != 0: tempSolution.remove(i) #remove letters that are found, fixes double letters
-    return numUnknownLetters
+    score = 0
+
+    for i, let in enumerate(word):
+        if word.find(let, i + 1) != -1: score += 26 #repeat letters
+        elif searchNonLetters(let) == True or solution.count(let) != 0: score += 26
+        else: score += letterRank.find(let)
+    return score
 
 def pickNextInput(): #selects the next input word
     #How the algorithm works:
@@ -59,8 +78,9 @@ def pickNextInput(): #selects the next input word
     for i in solution: #count the number of letters missing from 'solution'
         if len(i) == 0: numLettersMissing += 1
 
-    print(numLettersMissing)
-
+    if len(dict) == 0:
+        print("No words found that match the result scores entered. Check your results, and rerun.")
+        raise SystemExit
     if len(dict) == 1: return dict[0]
     if numLettersMissing == 0:
         result = ""
@@ -69,17 +89,16 @@ def pickNextInput(): #selects the next input word
     elif numLettersMissing == 1:
         return random.choice(dict)
     elif numLettersMissing > 1:
-        numUnknownLetters = 0
-        mostUnknownLetters = 0
-        mostUnknownLettersWord = ""
-        print("it ran")
+        currentScore = 0
+        leastScore = wordRankScore(dict[0])
+        leastScoreWord = dict[0]
 
         for i in dict:
-            numUnknownLetters = countUnknownLetters(i)
-            if numUnknownLetters > mostUnknownLetters:
-                mostUnknownLetters = numUnknownLetters
-                mostUnknownLettersWord = i
-        return mostUnknownLettersWord
+            currentScore = wordRankScore(i)
+            if currentScore < leastScore:
+                leastScore = currentScore
+                leastScoreWord = i
+        return leastScoreWord
 
 def checkInput(_word, _result): #parses the inputted word, and its result. removes bad words from the dictionary list.
     global dict
@@ -90,7 +109,8 @@ def checkInput(_word, _result): #parses the inputted word, and its result. remov
         if _result[i] == "0":
             removeWordsWithLetter(_word[i])
         elif _result[i] == "1":
-            nonLetters[i] = _word[i]
+            nonLetters[i] += _word[i]
+            removeWordsWithLetterInPos(_word[i], i)
         elif _result[i] == "2":
             solution[i] = _word[i]
             removeWordsWithLetterNotInPos(_word[i], i)
@@ -98,19 +118,19 @@ def checkInput(_word, _result): #parses the inputted word, and its result. remov
                 solution[i + 1] = 'u'
                 removeWordsWithLetterNotInPos('u', i + 1)
     
-    print(nonLetters)
-    print(solution)
-    print(dict)
-
+    #for loop through each of the indices-letters in nonLet, grab a letter, and then search for it through nonLet
     foundEmptyIndexFlag = False
-    for i in range(5): #check nonLetters for 'process of elimination' cases - where there is only one place a letter can be.
-        for ii in nonLetters[i]:
-            for iii in range(i + 1, 5):
-                if nonLetters[iii].find(ii) == -1 and len(solution[iii]) == 0: foundEmptyIndexFlag = True
-                if nonLetters[iii].find(ii) == -1 and len(solution[iii]) == 0 and foundEmptyIndexFlag: break #break if it finds two indices that could be a possible slot for 'ii'
+    emptyIndex = 0
+    for ind in nonLetters:
+        for let in ind:
+            for i, searchInd in enumerate(nonLetters):
+                if searchInd.find(let) == -1 and len(solution[i]) == 0:
+                    foundEmptyIndexFlag = True
+                    emptyIndex = i
+                if searchInd.find(let) == -1 and len(solution[i]) == 0 and foundEmptyIndexFlag: break #break if it finds two indices that could be a possible slot for 'ii'
             else: #found a slot that works!
-                solution[iii] = ii
-                removeWordsWithLetterNotInPos(ii, iii) #eliminate bad words
+                solution[emptyIndex] = let
+                removeWordsWithLetterNotInPos(let, emptyIndex) #eliminate bad words
             foundEmptyIndexFlag = False
     
     return pickNextInput()
@@ -152,7 +172,8 @@ while len(result) != 5:
     result = input("Result: ")
 
 for i in range(5): #5 more attempts to find the word
-    print("Next word: " + checkInput(word, result))
+    word = checkInput(word, result)
+    print("Next word: " + word)
 
     while True:
         yesno = input("Was that the solution? [Y/N] ")
