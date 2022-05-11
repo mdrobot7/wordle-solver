@@ -28,6 +28,12 @@ def removeWordsWithLetter(let): #removes words from dict containing the letter '
     for i in range(len(dict) - 1, -1, -1):
         if dict[i].find(let) != -1: #if it finds the letter ANYWHERE in the dict word, remove the dict word
             dict.pop(i)
+
+def removeWordsWithoutLetter(let):
+    global dict
+    for i in range(len(dict) - 1, -1, -1):
+        if dict[i].find(let) == -1: #if the letter is not found in the dict word, remove it
+            dict.pop(i)
             
 def removeWordsWithLetterNotInPos(let, pos): #removes words from dict that don't have the letter 'let' in position 'pos'
     global dict
@@ -35,7 +41,7 @@ def removeWordsWithLetterNotInPos(let, pos): #removes words from dict that don't
         if dict[i][pos] != let:
             dict.pop(i)
 
-def removeWordsWithLetterInPos(let, pos):
+def removeWordsWithLetterInPos(let, pos): #removes words from dict that have the letter 'let' in position 'pos'
     global dict
     for i in range(len(dict) - 1, -1, -1):
         if dict[i][pos] == let:
@@ -78,6 +84,12 @@ def pickNextInput(): #selects the next input word
     for i in solution: #count the number of letters missing from 'solution'
         if len(i) == 0: numLettersMissing += 1
 
+    #if dict.index("gecko") != -1: print("have it")
+    if len(dict) < 10:
+        print(dict)
+        print(nonLetters)
+        print(solution)
+
     if len(dict) == 0:
         print("No words found that match the result scores entered. Check your results, and rerun.")
         raise SystemExit
@@ -111,6 +123,7 @@ def checkInput(_word, _result): #parses the inputted word, and its result. remov
         elif _result[i] == "1":
             nonLetters[i] += _word[i]
             removeWordsWithLetterInPos(_word[i], i)
+            removeWordsWithoutLetter(_word[i]) #the letter has to be somewhere in the word, so get rid of everything that doesn't have it
         elif _result[i] == "2":
             solution[i] = _word[i]
             removeWordsWithLetterNotInPos(_word[i], i)
@@ -119,7 +132,7 @@ def checkInput(_word, _result): #parses the inputted word, and its result. remov
                 removeWordsWithLetterNotInPos('u', i + 1)
     
     #for loop through each of the indices-letters in nonLet, grab a letter, and then search for it through nonLet
-    foundEmptyIndexFlag = False
+    """foundEmptyIndexFlag = False
     emptyIndex = 0
     for ind in nonLetters:
         for let in ind:
@@ -131,7 +144,7 @@ def checkInput(_word, _result): #parses the inputted word, and its result. remov
             else: #found a slot that works!
                 solution[emptyIndex] = let
                 removeWordsWithLetterNotInPos(let, emptyIndex) #eliminate bad words
-            foundEmptyIndexFlag = False
+            foundEmptyIndexFlag = False"""
     
     return pickNextInput()
 
